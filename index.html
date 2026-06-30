@@ -3,37 +3,41 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-  <meta name="theme-color" content="#fff7fb">
-  <title>每日计划 · DAILY PLAN</title>
+  <meta name="theme-color" content="#070814">
+  <title>开机计划 · Boot Plan</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <div class="app-shell">
     <aside class="side-nav" aria-label="主导航">
       <div class="brand-lockup">
-        <div class="brand-mark">♡</div>
+        <div class="brand-mark">⏻</div>
         <div>
-          <strong>每日计划</strong>
-          <span>DAILY PLAN</span>
+          <strong>开机计划</strong>
+          <span>BOOT PLAN</span>
         </div>
       </div>
       <button class="nav-item active" data-page="today" type="button"><span>⌂</span>今日计划</button>
-      <button class="nav-item" data-page="review" type="button"><span>☽</span>每日复盘</button>
-      <button class="nav-item" data-page="history" type="button"><span>◷</span>历史记录</button>
-      <button class="nav-item" data-page="finance" type="button"><span>¥</span>财务中心</button>
-      <button class="nav-item" data-page="makeup" type="button"><span>✿</span>妆容记录</button>
-      <button class="nav-item" data-page="guide" type="button"><span>☆</span>目标系统</button>
+      <button class="nav-item" data-page="boot" type="button"><span>↟</span>启动区</button>
+      <button class="nav-item" data-page="today" data-scroll="mainTaskCard" type="button"><span>◆</span>主任务区</button>
+      <button class="nav-item" data-page="today" data-scroll="lightTaskCard" type="button"><span>◇</span>轻任务区</button>
+      <button class="nav-item" data-page="today" data-scroll="energyCard" type="button"><span>≈</span>恢复区</button>
+      <button class="nav-item" data-page="review" type="button"><span>☾</span>关机区</button>
+      <button class="nav-item" data-page="data" type="button"><span>◌</span>数据中心</button>
+      <button class="nav-item" data-page="goals" type="button"><span>⌬</span>目标系统</button>
+      <button class="nav-item" data-page="settings" type="button"><span>⚙</span>设置</button>
       <div class="streak-card">
         <span>连续开机天数</span>
         <strong id="sideStreakDays">0</strong>
         <small>Days</small>
+        <div class="mini-sparkline"><i></i><i></i><i></i><i></i><i></i><i></i></div>
       </div>
     </aside>
 
     <header class="topbar">
       <div>
         <p class="eyebrow" id="todayLabel"></p>
-        <h1>每日计划 <span>DAILY PLAN</span></h1>
+        <h1>开机计划 <span>BOOT PLAN</span></h1>
         <p class="cloud-status" id="cloudStatus">本地保存 · 正在连接云端</p>
       </div>
       <button class="icon-button" id="jumpToday" type="button" aria-label="回到今天">今</button>
@@ -44,14 +48,14 @@
         <section class="hero-panel">
           <div class="hero-copy">
             <p class="section-kicker">GOOD MORNING</p>
-            <h2>先把自己开机，<br>再开始改变人生。</h2>
-            <p>从今天早上开始，掌控你的一天。今天先做哪一件，就从这里决定。</p>
+            <h2>先把自己开机<br>再开始改变人生</h2>
+            <p>从今天早上 9:30 开始，掌控你的一天。</p>
             <button class="hero-button" type="button" id="startPlan">开始今天的计划 <span>▶</span></button>
           </div>
-          <div class="hero-clock">
-            <span>今日时间</span>
+          <div class="hero-clock boot-orbit">
+            <span>GOOD MORNING</span>
             <strong id="liveClock">--:--</strong>
-            <small id="weatherText">厦门 · 27°C 多云</small>
+            <small>你不是没有时间，你只是还没决定好，今天先做哪一件。</small>
           </div>
         </section>
 
@@ -74,7 +78,7 @@
             <strong id="paymentTotal">¥0.00</strong>
           </article>
           <article class="summary-card sage-summary">
-            <span>连续打卡</span>
+            <span>连续开机</span>
             <strong id="streakDays">0 天</strong>
           </article>
         </div>
@@ -88,16 +92,16 @@
             <span class="count-badge" id="flowCount">0 / 5</span>
           </div>
           <div class="flow-steps" id="flowSteps">
-            <button class="flow-step" type="button" data-flow="boot"><b>☀</b><strong>启动区</strong><span>起床后 1 小时</span></button>
-            <button class="flow-step" type="button" data-flow="main"><b>♜</b><strong>主任务区</strong><span>只做最重要一件</span></button>
-            <button class="flow-step" type="button" data-flow="light"><b>♡</b><strong>轻任务区</strong><span>整理 / 学习 / 杂务</span></button>
-            <button class="flow-step" type="button" data-flow="recover"><b>✦</b><strong>恢复区</strong><span>运动 / 出门 / 社交</span></button>
-            <button class="flow-step" type="button" data-flow="shutdown"><b>☾</b><strong>关机区</strong><span>复盘 / 睡前准备</span></button>
+            <button class="flow-step" type="button" data-flow="boot" data-target-page="boot"><b>01</b><strong>启动区</strong><span>9:30-10:30 · 起床后 1 小时</span><em>等待</em></button>
+            <button class="flow-step current" type="button" data-flow="main"><b>45%</b><strong>主任务区</strong><span>10:30-12:00 · 90 分钟专注</span><em>进行中</em></button>
+            <button class="flow-step" type="button" data-flow="light"><b>03</b><strong>轻任务区</strong><span>14:00-15:30 · 学习 / 整理 / 杂务</span><em>等待</em></button>
+            <button class="flow-step" type="button" data-flow="recover"><b>04</b><strong>恢复区</strong><span>16:00-18:00 · 运动 / 出门 / 社交</span><em>等待</em></button>
+            <button class="flow-step" type="button" data-flow="shutdown" data-target-page="review"><b>05</b><strong>关机区</strong><span>22:00-23:00 · 复盘 / 睡前准备</span><em>等待</em></button>
           </div>
         </section>
 
         <div class="daily-grid">
-          <section class="card section-card main-task-card">
+          <section class="card section-card main-task-card" id="mainTaskCard">
             <div class="section-heading">
               <div>
                 <p class="section-kicker">ONE THING</p>
@@ -106,8 +110,13 @@
               <span class="count-badge" id="mainTaskBadge">未设定</span>
             </div>
             <div class="quick-card-body">
-              <input class="main-task-input" id="mainTaskInput" maxlength="80" placeholder="今天最重要的一件事">
-              <label class="pretty-check"><input id="mainTaskDone" type="checkbox"><span>完成主任务</span></label>
+              <input class="main-task-input" id="mainTaskInput" maxlength="80" placeholder="学会并开口练 15 句日常聊天英语">
+              <select class="main-task-select" id="mainTaskCategory">
+                <option>英语</option><option>化妆</option><option>项目</option><option>赚钱</option><option>日语</option>
+              </select>
+              <div class="main-progress"><span id="mainProgressBar"></span></div>
+              <div class="substeps" id="mainSubsteps"></div>
+              <button class="primary-button" id="completeMainTask" type="button">完成主任务</button>
             </div>
           </section>
 
@@ -130,7 +139,7 @@
             </div>
           </section>
 
-          <section class="card section-card energy-card">
+          <section class="card section-card energy-card" id="energyCard">
             <div class="section-heading">
               <div>
                 <p class="section-kicker">ENERGY</p>
@@ -140,9 +149,9 @@
             </div>
             <div class="energy-wave"></div>
             <div class="energy-controls">
-              <label>专注度 <input id="focusEnergy" type="range" min="1" max="5" value="4"></label>
-              <label>情绪状态 <input id="moodEnergy" type="range" min="1" max="5" value="4"></label>
-              <label>身体状态 <input id="bodyEnergy" type="range" min="1" max="5" value="3"></label>
+              <label>今天精神如何？ <input id="focusEnergy" type="range" min="1" max="5" value="4"></label>
+              <label>今天情绪如何？ <input id="moodEnergy" type="range" min="1" max="5" value="4"></label>
+              <label>今天身体状态如何？ <input id="bodyEnergy" type="range" min="1" max="5" value="3"></label>
             </div>
           </section>
         </div>
@@ -152,7 +161,7 @@
           <p class="improve-text" id="yesterdayImproveText"></p>
         </div>
 
-        <section class="card section-card">
+        <section class="card section-card" id="lightTaskCard">
           <div class="section-heading">
             <div>
               <p class="section-kicker">LIGHT TASKS</p>
@@ -287,6 +296,31 @@
         </section>
       </section>
 
+      <section class="page" id="bootPage">
+        <div class="page-title simple-title">
+          <div>
+            <p class="section-kicker">BOOT SEQUENCE</p>
+            <h2>起床后第 1 小时 · 启动区流程</h2>
+          </div>
+        </div>
+        <p class="boot-subtitle">这不是学习时间，也不是工作时间。它的任务只有一个：把你从迷糊状态，平顺拉到清醒、在线。</p>
+        <section class="card section-card">
+          <div class="boot-timeline">
+            <article><span>01</span><b>起床那一下</b><p>下床，走到房间另一头关掉闹钟。最关键的一步：先站起来，先离开床。</p></article>
+            <article><span>02</span><b>前 10 分钟：唤醒身体</b><p>喝一大杯水。拉开窗帘，让自然光照到脸上。</p></article>
+            <article><span>03</span><b>洗漱 + 早饭</b><p>洗脸、刷牙、弄一点早餐。全程手机不上手。可以听一首英文歌当起床奖励。</p></article>
+            <article><span>04</span><b>轻动作开机</b><p>出门走 10 分钟 / 简单拉伸 / 想一遍今天最重要的事。目标不是高强度工作，而是让大脑彻底上线。</p></article>
+          </div>
+        </section>
+        <section class="card boot-win-card">
+          <p>今天这 60 分钟里：<br><strong>不刷短视频，不打游戏，就算赢。</strong></p>
+          <div class="boot-actions">
+            <button id="bootWakeBtn" type="button">我已经起床</button>
+            <button id="bootDoneBtn" type="button">启动完成</button>
+          </div>
+        </section>
+      </section>
+
       <section class="page" id="reviewPage">
         <div class="page-title">
           <button class="back-button" data-page="today" type="button">←</button>
@@ -297,20 +331,20 @@
         </div>
         <form class="card review-form" id="reviewForm">
           <div class="field full">
-            <label for="reviewDone">今天完成了什么</label>
-            <textarea id="reviewDone" rows="3" placeholder="记录今天的小小成果…"></textarea>
+            <label for="reviewDone">今天最重要的任务完成了吗？</label>
+            <textarea id="reviewDone" rows="3" placeholder="记录今天最重要的一件事完成到哪里。"></textarea>
           </div>
           <div class="field full">
-            <label for="reviewUndone">今天没完成什么</label>
-            <textarea id="reviewUndone" rows="3" placeholder="没关系，诚实记录就好。"></textarea>
+            <label for="reviewUndone">今天让我状态变好的事情是什么？</label>
+            <textarea id="reviewUndone" rows="3" placeholder="记录让你更在线的事情。"></textarea>
           </div>
           <div class="field full">
-            <label for="reviewProblems">今天的问题</label>
-            <textarea id="reviewProblems" rows="3" placeholder="是什么让事情变得困难？"></textarea>
+            <label for="reviewProblems">今天我被什么打断了？</label>
+            <textarea id="reviewProblems" rows="3" placeholder="是什么切走了你的注意力？"></textarea>
           </div>
           <div class="field full">
-            <label for="reviewImprove">明天要改进什么</label>
-            <textarea id="reviewImprove" rows="3" placeholder="给明天一个清晰的小提示…"></textarea>
+            <label for="reviewImprove">明天醒来后的第一件事是什么？</label>
+            <textarea id="reviewImprove" rows="3" placeholder="给明天启动区一个明确动作。"></textarea>
           </div>
           <fieldset class="mood-field">
             <legend>今日心情</legend>
@@ -323,8 +357,8 @@
             </div>
           </fieldset>
           <div class="field full">
-            <label for="reviewNote">今日备注</label>
-            <textarea id="reviewNote" rows="4" placeholder="其他想留下来的话…"></textarea>
+            <label for="reviewNote">今日一句总结</label>
+            <textarea id="reviewNote" rows="4" placeholder="用一句话关机。"></textarea>
           </div>
           <button class="primary-button full" type="submit">保存今日复盘</button>
           <p class="save-hint" id="reviewSaveHint">内容会自动保存在本地并同步到云端</p>
@@ -430,10 +464,37 @@
         </section>
       </section>
 
-      <section class="page" id="guidePage">
+      <section class="page" id="dataPage">
         <div class="page-title simple-title">
           <div>
-            <p class="section-kicker">NEGENTROPY GUIDE</p>
+            <p class="section-kicker">DATA CENTER</p>
+            <h2>数据中心</h2>
+          </div>
+        </div>
+        <div class="data-page-grid">
+          <article class="summary-card rose"><span>连续开机天数</span><strong id="dataStreak">0 天</strong></article>
+          <article class="summary-card cream"><span>本周启动完成率</span><strong id="dataBootRate">0%</strong></article>
+          <article class="summary-card lilac"><span>本周主任务完成率</span><strong id="dataMainRate">0%</strong></article>
+          <article class="summary-card sage-summary"><span>专注总时长</span><strong id="dataFocusTotal">0m</strong></article>
+        </div>
+        <section class="card section-card">
+          <div class="section-heading"><div><p class="section-kicker">ENERGY TREND</p><h2>最近 7 天能量趋势</h2></div></div>
+          <div class="trend-bars large" id="energyTrendBars"></div>
+        </section>
+        <section class="card section-card">
+          <div class="section-heading"><div><p class="section-kicker">CATEGORY</p><h2>各类别任务完成次数</h2></div></div>
+          <div class="category-bars" id="categoryBars"></div>
+        </section>
+        <section class="card section-card">
+          <div class="section-heading"><div><p class="section-kicker">REVIEW CALENDAR</p><h2>历史复盘日历</h2></div></div>
+          <div class="review-calendar" id="reviewCalendar"></div>
+        </section>
+      </section>
+
+      <section class="page" id="goalsPage">
+        <div class="page-title simple-title">
+          <div>
+            <p class="section-kicker">GOALS SYSTEM</p>
             <h2>目标系统</h2>
           </div>
         </div>
@@ -472,15 +533,30 @@
           </ul>
         </section>
       </section>
+
+      <section class="page" id="settingsPage">
+        <div class="page-title simple-title">
+          <div>
+            <p class="section-kicker">SETTINGS</p>
+            <h2>设置</h2>
+          </div>
+        </div>
+        <section class="card section-card">
+          <div class="section-heading"><div><p class="section-kicker">DATA</p><h2>本地数据</h2></div></div>
+          <div class="quick-card-body">
+            <p class="history-muted">数据默认保存在当前浏览器 localStorage。清空前会二次确认。</p>
+            <button class="primary-button danger" id="resetDemoData" type="button">清空本地数据</button>
+          </div>
+        </section>
+      </section>
     </main>
 
     <nav class="bottom-nav" aria-label="主导航">
       <button class="nav-item active" data-page="today" type="button"><span>⌂</span>今日</button>
-      <button class="nav-item" data-page="review" type="button"><span>✎</span>复盘</button>
-      <button class="nav-item" data-page="history" type="button"><span>◷</span>历史</button>
-      <button class="nav-item" data-page="finance" type="button"><span>💰</span>财务</button>
-      <button class="nav-item" data-page="makeup" type="button"><span>📸</span>妆容</button>
-      <button class="nav-item" data-page="guide" type="button"><span>☆</span>目标</button>
+      <button class="nav-item" data-page="boot" type="button"><span>↟</span>启动</button>
+      <button class="nav-item" data-page="data" type="button"><span>◌</span>数据</button>
+      <button class="nav-item" data-page="goals" type="button"><span>⌬</span>目标</button>
+      <button class="nav-item" data-page="settings" type="button"><span>⚙</span>设置</button>
     </nav>
   </div>
 
@@ -493,6 +569,6 @@
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="app.js?v=20260630-boot-plan1"></script>
+  <script src="app.js?v=20260630-boot-plan2"></script>
 </body>
 </html>

@@ -32,11 +32,15 @@ const elements = {
   reviewForm: $('#reviewForm'), reviewDateLabel: $('#reviewDateLabel'), reviewSaveHint: $('#reviewSaveHint'),
   historyContent: $('#historyContent'), toast: $('#toast'), cloudStatus: $('#cloudStatus'),
   sideStreakDays: $('#sideStreakDays'), liveClock: $('#liveClock'), flowCount: $('#flowCount'),
-  mainTaskInput: $('#mainTaskInput'), mainTaskDone: $('#mainTaskDone'), mainTaskBadge: $('#mainTaskBadge'),
+  mainTaskInput: $('#mainTaskInput'), mainTaskCategory: $('#mainTaskCategory'), mainTaskBadge: $('#mainTaskBadge'),
+  mainSubsteps: $('#mainSubsteps'), mainProgressBar: $('#mainProgressBar'), completeMainTask: $('#completeMainTask'),
   focusTotal: $('#focusTotal'), dataCompletion: $('#dataCompletion'), dataFocus: $('#dataFocus'),
   dataMonthPay: $('#dataMonthPay'), todayTimeline: $('#todayTimeline'), trendBars: $('#trendBars'),
   goalGrid: $('#goalGrid'), badgeRow: $('#badgeRow'), quickReview: $('#quickReview'),
-  journalText: $('#journalText'), energySummary: $('#energySummary'), homeMakeupPreview: $('#homeMakeupPreview')
+  journalText: $('#journalText'), energySummary: $('#energySummary'), homeMakeupPreview: $('#homeMakeupPreview'),
+  dataStreak: $('#dataStreak'), dataBootRate: $('#dataBootRate'), dataMainRate: $('#dataMainRate'),
+  dataFocusTotal: $('#dataFocusTotal'), energyTrendBars: $('#energyTrendBars'), categoryBars: $('#categoryBars'),
+  reviewCalendar: $('#reviewCalendar'), resetDemoData: $('#resetDemoData'), bootWakeBtn: $('#bootWakeBtn'), bootDoneBtn: $('#bootDoneBtn')
 };
 
 let selectedDate = localDateKey();
@@ -101,9 +105,10 @@ function blankRecord() {
 function blankPlan() {
   return {
     flow: { boot: false, main: false, light: false, recover: false, shutdown: false },
-    mainTask: '', mainDone: false, focusMinutes: 0,
+    bootWake: false, mainTask: '学会并开口练 15 句日常聊天英语', mainCategory: '英语',
+    mainDone: false, mainSubsteps: [false, false, false, false], focusMinutes: 0,
     energy: { focus: 4, mood: 4, body: 3 },
-    journal: '', quickReview: ''
+    journal: '', quickReview: '', achievements: []
   };
 }
 
@@ -139,6 +144,8 @@ function getRecord(date = selectedDate) {
   records[date].plan = { ...blankPlan(), ...(records[date].plan || {}) };
   records[date].plan.flow = { ...blankPlan().flow, ...(records[date].plan.flow || {}) };
   records[date].plan.energy = { ...blankPlan().energy, ...(records[date].plan.energy || {}) };
+  records[date].plan.mainSubsteps = Array.isArray(records[date].plan.mainSubsteps) ? records[date].plan.mainSubsteps : [false, false, false, false];
+  records[date].plan.achievements = Array.isArray(records[date].plan.achievements) ? records[date].plan.achievements : [];
   return records[date];
 }
 
@@ -336,12 +343,23 @@ function renderTasks() {
 
 function renderPlan() {
   const plan = getRecord().plan;
-  $$('.flow-step').forEach((button) => button.classList.toggle('done', Boolean(plan.flow[button.dataset.flow])));
+  $$('.flow-step').forEach((button) => {
+    const done = Boolean(plan.flow[button.dataset.flow]);
+    button.classList.toggle('done', done);
+    const status = button.querySelector('em');
+    if (status) status.textContent = done ? '已完成' : (button.classList.contains('current') ? '进行中' : '等待');
+  });
   const flowDone = Object.values(plan.flow).filter(Boolean).length;
   elements.flowCount.textContent = `${flowDone} / 5`;
   elements.mainTaskInput.value = plan.mainTask || '';
-  elements.mainTaskDone.checked = Boolean(plan.mainDone);
+  elements.mainTaskCategory.value = plan.mainCategory || '英语';
+  const subDone = plan.mainSubsteps.filter(Boolean).length;
+  const mainProgress = plan.mainDone ? 100 : Math.round(subDone / 4 * 100);
+  elements.mainProgressBar.style.width = `${mainProgress}%`;
   elements.mainTaskBadge.textContent = plan.mainDone ? '已完成' : (plan.mainTask ? '进行中' : '未设定');
+  elements.mainSubsteps.innerHTML = ['听力输入 5 句', '跟读练习 5 句', '开口输出 5 句', '录音并复盘'].map((label, index) => `
+    <label class="pretty-check"><input type="checkbox" data-substep="${index}" ${plan.mainSubsteps[index] ? 'checked' : ''}><span>${label}</span></label>
+  `).join('');
   $('#focusEnergy').value = plan.energy.focus;
   $('#moodEnergy').value = plan.energy.mood;
   $('#bodyEnergy').value = plan.energy.body;
@@ -368,6 +386,7 @@ function renderDashboard() {
   elements.dataCompletion.textContent = `${rate}%`;
   elements.dataFocus.textContent = `${record.plan.focusMinutes || 0}m`;
   elements.dataMonthPay.textContent = money(monthPaymentTotal());
+  renderDataCenter();
 
   const flowLabels = [
     ['09:30', '启动区', '起床后 1 小时'], ['10:30', '主任务区', '90 分钟专注'],
@@ -396,6 +415,46 @@ function renderDashboard() {
     ['任务完成', Boolean(record.plan.mainDone)], ['复盘之星', Boolean(record.review.done || record.plan.quickReview)]
   ];
   elements.badgeRow.innerHTML = badges.map(([title, active]) => `<div class="${active ? 'active' : ''}"><b>✦</b><span>${title}</span></div>`).join('');
+}
+
+function lastNDates(count) {
+  return [...Array(count)].map((_, index) => {
+    const d = new Date(`${selectedDate}T00:00:00`);
+    d.setDate(d.getDate() - (count - 1 - index));
+    return localDateKey(d);
+  });
+}
+
+function renderDataCenter() {
+  if (!elements.dataStreak) return;
+  const week = lastNDates(7);
+  const bootDone = week.filter((date) => records[date]?.plan?.flow?.boot).length;
+  const mainDone = week.filter((date) => records[date]?.plan?.mainDone).length;
+  const focusTotal = Object.values(records).reduce((sum, day) => sum + Number(day.plan?.focusMinutes || 0), 0);
+  elements.dataStreak.textContent = `${calculateStreak()} 天`;
+  elements.dataBootRate.textContent = `${Math.round(bootDone / 7 * 100)}%`;
+  elements.dataMainRate.textContent = `${Math.round(mainDone / 7 * 100)}%`;
+  elements.dataFocusTotal.textContent = `${focusTotal}m`;
+
+  elements.energyTrendBars.innerHTML = week.map((date) => {
+    const energy = records[date]?.plan?.energy || {};
+    const value = Math.max(8, Math.round(((Number(energy.focus || 0) + Number(energy.mood || 0) + Number(energy.body || 0)) / 15) * 100));
+    return `<i style="height:${value}%"></i>`;
+  }).join('');
+
+  const cats = {};
+  Object.values(records).forEach((day) => (day.tasks || []).forEach((task) => {
+    if (!task.completed) return;
+    cats[task.category || '自定义'] = (cats[task.category || '自定义'] || 0) + 1;
+  }));
+  elements.categoryBars.innerHTML = Object.entries(cats).map(([cat, count]) => `
+    <div><span>${escapeHTML(cat)}</span><b style="width:${Math.min(100, count * 8)}%"></b><strong>${count}</strong></div>
+  `).join('') || '<p class="history-muted">还没有已完成任务。</p>';
+
+  elements.reviewCalendar.innerHTML = week.map((date) => {
+    const hasReview = Boolean(records[date]?.review?.done || records[date]?.review?.note || records[date]?.plan?.quickReview);
+    return `<span class="${hasReview ? 'active' : ''}">${date.slice(5)}</span>`;
+  }).join('');
 }
 
 function calculateStreak() {
@@ -463,7 +522,7 @@ function savePlan(patch) {
 
 function switchPage(page) {
   $$('.page').forEach((section) => section.classList.toggle('active', section.id === `${page}Page`));
-  $$('.nav-item').forEach((button) => button.classList.toggle('active', button.dataset.page === page));
+  $$('.nav-item').forEach((button) => button.classList.toggle('active', button.dataset.page === page && !button.dataset.scroll));
   if (page === 'history') renderHistory();
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
@@ -571,6 +630,10 @@ $('#startPlan').addEventListener('click', () => {
 $('#flowSteps').addEventListener('click', (event) => {
   const button = event.target.closest('.flow-step');
   if (!button) return;
+  if (button.dataset.targetPage) {
+    switchPage(button.dataset.targetPage);
+    return;
+  }
   const plan = getRecord().plan;
   plan.flow[button.dataset.flow] = !plan.flow[button.dataset.flow];
   saveRecords();
@@ -579,7 +642,27 @@ $('#flowSteps').addEventListener('click', (event) => {
 });
 
 elements.mainTaskInput.addEventListener('input', () => savePlan({ mainTask: elements.mainTaskInput.value.trim() }));
-elements.mainTaskDone.addEventListener('change', () => savePlan({ mainDone: elements.mainTaskDone.checked }));
+elements.mainTaskCategory.addEventListener('change', () => savePlan({ mainCategory: elements.mainTaskCategory.value }));
+elements.mainSubsteps.addEventListener('change', (event) => {
+  if (!event.target.matches('[data-substep]')) return;
+  const plan = getRecord().plan;
+  plan.mainSubsteps[Number(event.target.dataset.substep)] = event.target.checked;
+  plan.mainDone = plan.mainSubsteps.every(Boolean);
+  saveRecords();
+  renderPlan();
+  renderDashboard();
+});
+elements.completeMainTask.addEventListener('click', () => {
+  const plan = getRecord().plan;
+  plan.mainDone = true;
+  plan.mainSubsteps = [true, true, true, true];
+  plan.flow.main = true;
+  plan.achievements.push({ title: plan.mainTask || '今日主任务', time: nowTime() });
+  saveRecords();
+  renderPlan();
+  renderDashboard();
+  toast('今日成果已记录');
+});
 ['focusEnergy', 'moodEnergy', 'bodyEnergy'].forEach((id) => {
   $(`#${id}`).addEventListener('input', () => {
     savePlan({ energy: { focus: $('#focusEnergy').value, mood: $('#moodEnergy').value, body: $('#bodyEnergy').value } });
@@ -587,6 +670,28 @@ elements.mainTaskDone.addEventListener('change', () => savePlan({ mainDone: elem
 });
 elements.quickReview.addEventListener('input', () => savePlan({ quickReview: elements.quickReview.value.trim() }));
 elements.journalText.addEventListener('input', () => savePlan({ journal: elements.journalText.value.trim() }));
+elements.bootWakeBtn?.addEventListener('click', () => {
+  const plan = getRecord().plan;
+  plan.bootWake = true;
+  saveRecords();
+  toast('已记录：你已经起床');
+});
+elements.bootDoneBtn?.addEventListener('click', () => {
+  const plan = getRecord().plan;
+  plan.bootWake = true;
+  plan.flow.boot = true;
+  saveRecords();
+  renderPlan();
+  renderDashboard();
+  toast('启动区完成');
+});
+elements.resetDemoData?.addEventListener('click', () => {
+  if (!confirm('确定要清空当前浏览器里的 Boot Plan 本地数据吗？这个操作不能撤销。')) return;
+  localStorage.removeItem(STORAGE_KEY);
+  records = {};
+  setSelectedDate(localDateKey());
+  toast('本地数据已清空');
+});
 
 function renderClock() {
   elements.liveClock.textContent = nowTime();
@@ -709,7 +814,11 @@ $('#finNext').addEventListener('click', () => {
 $$('[data-page]').forEach((button) => button.addEventListener('click', () => {
   if (button.dataset.page === 'finance') renderFinance();
   if (button.dataset.page === 'makeup') renderMakeup();
+  if (button.dataset.page === 'data') renderDataCenter();
   switchPage(button.dataset.page);
+  if (button.dataset.scroll) {
+    setTimeout(() => document.getElementById(button.dataset.scroll)?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 80);
+  }
 }));
 $('#openReview').addEventListener('click', () => switchPage('review'));
 $('#jumpToday').addEventListener('click', () => { setSelectedDate(localDateKey()); switchPage('today'); });
