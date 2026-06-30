@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#fff7fb">
+  <title>每日计划 · DAILY PLAN</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="side-nav" aria-label="主导航">
+      <div class="brand-lockup">
+        <div class="brand-mark">♡</div>
+        <div>
+          <strong>每日计划</strong>
+          <span>DAILY PLAN</span>
+        </div>
+      </div>
+      <button class="nav-item active" data-page="today" type="button"><span>⌂</span>今日计划</button>
+      <button class="nav-item" data-page="review" type="button"><span>☽</span>每日复盘</button>
+      <button class="nav-item" data-page="history" type="button"><span>◷</span>历史记录</button>
+      <button class="nav-item" data-page="finance" type="button"><span>¥</span>财务中心</button>
+      <button class="nav-item" data-page="makeup" type="button"><span>✿</span>妆容记录</button>
+      <button class="nav-item" data-page="guide" type="button"><span>☆</span>目标系统</button>
+      <div class="streak-card">
+        <span>连续开机天数</span>
+        <strong id="sideStreakDays">0</strong>
+        <small>Days</small>
+      </div>
+    </aside>
+
+    <header class="topbar">
+      <div>
+        <p class="eyebrow" id="todayLabel"></p>
+        <h1>每日计划 <span>DAILY PLAN</span></h1>
+        <p class="cloud-status" id="cloudStatus">本地保存 · 正在连接云端</p>
+      </div>
+      <button class="icon-button" id="jumpToday" type="button" aria-label="回到今天">今</button>
+    </header>
+
+    <main>
+      <section class="page active" id="todayPage">
+        <section class="hero-panel">
+          <div class="hero-copy">
+            <p class="section-kicker">GOOD MORNING</p>
+            <h2>先把自己开机，<br>再开始改变人生。</h2>
+            <p>从今天早上开始，掌控你的一天。今天先做哪一件，就从这里决定。</p>
+            <button class="hero-button" type="button" id="startPlan">开始今天的计划 <span>▶</span></button>
+          </div>
+          <div class="hero-clock">
+            <span>今日时间</span>
+            <strong id="liveClock">--:--</strong>
+            <small id="weatherText">厦门 · 27°C 多云</small>
+          </div>
+        </section>
+
+        <div class="date-row card soft-card">
+          <label for="recordDate">查看日期</label>
+          <input id="recordDate" type="date">
+        </div>
+
+        <div class="summary-grid">
+          <article class="summary-card rose">
+            <span>完成率</span>
+            <strong id="completionRate">0%</strong>
+          </article>
+          <button class="summary-card cream" id="openReview" type="button">
+            <span>今日复盘</span>
+            <strong>去记录 →</strong>
+          </button>
+          <article class="summary-card lilac">
+            <span>今日付款</span>
+            <strong id="paymentTotal">¥0.00</strong>
+          </article>
+          <article class="summary-card sage-summary">
+            <span>连续打卡</span>
+            <strong id="streakDays">0 天</strong>
+          </article>
+        </div>
+
+        <section class="card section-card flow-card">
+          <div class="section-heading">
+            <div>
+              <p class="section-kicker">TODAY FLOW</p>
+              <h2>今日流程</h2>
+            </div>
+            <span class="count-badge" id="flowCount">0 / 5</span>
+          </div>
+          <div class="flow-steps" id="flowSteps">
+            <button class="flow-step" type="button" data-flow="boot"><b>☀</b><strong>启动区</strong><span>起床后 1 小时</span></button>
+            <button class="flow-step" type="button" data-flow="main"><b>♜</b><strong>主任务区</strong><span>只做最重要一件</span></button>
+            <button class="flow-step" type="button" data-flow="light"><b>♡</b><strong>轻任务区</strong><span>整理 / 学习 / 杂务</span></button>
+            <button class="flow-step" type="button" data-flow="recover"><b>✦</b><strong>恢复区</strong><span>运动 / 出门 / 社交</span></button>
+            <button class="flow-step" type="button" data-flow="shutdown"><b>☾</b><strong>关机区</strong><span>复盘 / 睡前准备</span></button>
+          </div>
+        </section>
+
+        <div class="daily-grid">
+          <section class="card section-card main-task-card">
+            <div class="section-heading">
+              <div>
+                <p class="section-kicker">ONE THING</p>
+                <h2>今日主任务</h2>
+              </div>
+              <span class="count-badge" id="mainTaskBadge">未设定</span>
+            </div>
+            <div class="quick-card-body">
+              <input class="main-task-input" id="mainTaskInput" maxlength="80" placeholder="今天最重要的一件事">
+              <label class="pretty-check"><input id="mainTaskDone" type="checkbox"><span>完成主任务</span></label>
+            </div>
+          </section>
+
+          <section class="card section-card timer-card">
+            <div class="section-heading">
+              <div>
+                <p class="section-kicker">FOCUS</p>
+                <h2>专注计时器</h2>
+              </div>
+              <span class="mini-total" id="focusTotal">0 分钟</span>
+            </div>
+            <div class="timer-face">
+              <strong id="timerDisplay">45:00</strong>
+              <span id="timerState">准备专注</span>
+            </div>
+            <div class="timer-actions">
+              <button type="button" id="timerStart">▶</button>
+              <button type="button" id="timerPause">Ⅱ</button>
+              <button type="button" id="timerReset">■</button>
+            </div>
+          </section>
+
+          <section class="card section-card energy-card">
+            <div class="section-heading">
+              <div>
+                <p class="section-kicker">ENERGY</p>
+                <h2>能量状态</h2>
+              </div>
+              <span class="mini-total" id="energySummary">Good</span>
+            </div>
+            <div class="energy-wave"></div>
+            <div class="energy-controls">
+              <label>专注度 <input id="focusEnergy" type="range" min="1" max="5" value="4"></label>
+              <label>情绪状态 <input id="moodEnergy" type="range" min="1" max="5" value="4"></label>
+              <label>身体状态 <input id="bodyEnergy" type="range" min="1" max="5" value="3"></label>
+            </div>
+          </section>
+        </div>
+
+        <div id="yesterdayImprove" style="display:none" class="improve-banner">
+          <p class="improve-label">✦ 昨日复盘 · 今天要改进</p>
+          <p class="improve-text" id="yesterdayImproveText"></p>
+        </div>
+
+        <section class="card section-card">
+          <div class="section-heading">
+            <div>
+              <p class="section-kicker">LIGHT TASKS</p>
+              <h2>轻任务区</h2>
+            </div>
+            <span class="count-badge" id="taskCount">0 / 0</span>
+          </div>
+          <form class="inline-form" id="taskForm">
+            <input id="taskInput" type="text" maxlength="80" placeholder="写下一件想完成的事…" required>
+            <button type="submit">添加</button>
+          </form>
+          <div id="taskList"></div>
+        </section>
+
+        <div class="home-lower-grid">
+          <section class="card section-card">
+            <div class="section-heading">
+              <div><p class="section-kicker">TIMELINE</p><h2>今日时间轴</h2></div>
+            </div>
+            <div class="timeline-list" id="todayTimeline"></div>
+          </section>
+
+          <section class="card section-card">
+            <div class="section-heading">
+              <div><p class="section-kicker">DATA</p><h2>数据中心</h2></div>
+            </div>
+            <div class="data-center">
+              <div><span>完成率</span><strong id="dataCompletion">0%</strong></div>
+              <div><span>专注时长</span><strong id="dataFocus">0m</strong></div>
+              <div><span>本月支出</span><strong id="dataMonthPay">¥0</strong></div>
+            </div>
+            <div class="trend-bars" id="trendBars"></div>
+          </section>
+        </div>
+
+        <section class="card section-card">
+          <div class="section-heading">
+            <div>
+              <p class="section-kicker">PAYMENTS</p>
+              <h2>付款记录</h2>
+            </div>
+            <strong class="mini-total" id="paymentMiniTotal">¥0.00</strong>
+          </div>
+          <form class="payment-form" id="paymentForm">
+            <div class="field full">
+              <label>消费分类</label>
+              <div class="payment-cat-chips" id="payCatChips">
+                <div class="payment-cat-chip active" data-cat="餐饮" onclick="selectPayCat(this)">🍜 餐饮</div>
+                <div class="payment-cat-chip" data-cat="购物" onclick="selectPayCat(this)">🛍 购物</div>
+                <div class="payment-cat-chip" data-cat="交通" onclick="selectPayCat(this)">🚌 交通</div>
+                <div class="payment-cat-chip" data-cat="娱乐" onclick="selectPayCat(this)">🎬 娱乐</div>
+                <div class="payment-cat-chip" data-cat="生活" onclick="selectPayCat(this)">🏠 生活</div>
+                <div class="payment-cat-chip" data-cat="学习" onclick="selectPayCat(this)">📚 学习</div>
+                <div class="payment-cat-chip" data-cat="健康" onclick="selectPayCat(this)">💊 健康</div>
+                <div class="payment-cat-chip" data-cat="其他" onclick="selectPayCat(this)">💸 其他</div>
+              </div>
+            </div>
+            <div class="field">
+              <label for="paymentItem">付款项目</label>
+              <input id="paymentItem" type="text" maxlength="50" placeholder="例如：午餐" required>
+            </div>
+            <div class="field">
+              <label for="paymentTime">付款时间</label>
+              <input id="paymentTime" type="time" required>
+            </div>
+            <div class="field">
+              <label for="paymentAmount">金额</label>
+              <input id="paymentAmount" type="number" min="0.01" step="0.01" inputmode="decimal" placeholder="0.00" required>
+            </div>
+            <div class="field">
+              <label for="paymentMethod">支付方式</label>
+              <select id="paymentMethod">
+                <option>微信</option>
+                <option>支付宝</option>
+                <option>银行卡</option>
+                <option>现金</option>
+                <option>其他</option>
+              </select>
+            </div>
+            <div class="field full">
+              <label for="paymentNote">备注</label>
+              <input id="paymentNote" type="text" maxlength="100" placeholder="可选">
+            </div>
+            <button class="primary-button full" type="submit">记一笔</button>
+          </form>
+          <div class="empty-state" id="paymentEmpty">今天还没有付款记录。</div>
+          <div class="payment-list" id="paymentList"></div>
+        </section>
+
+        <section class="card section-card">
+          <div class="section-heading">
+            <div><p class="section-kicker">MAKEUP</p><h2>妆容记录</h2></div>
+            <button class="text-link" data-page="makeup" type="button">去记录 →</button>
+          </div>
+          <div class="mini-gallery" id="homeMakeupPreview"></div>
+        </section>
+
+        <div class="home-lower-grid">
+          <section class="card section-card">
+            <div class="section-heading">
+              <div><p class="section-kicker">REVIEW</p><h2>今日复盘</h2></div>
+              <button class="text-link" data-page="review" type="button">完整复盘 →</button>
+            </div>
+            <div class="quick-card-body">
+              <textarea id="quickReview" rows="4" placeholder="今天最值得记住的一句话…"></textarea>
+            </div>
+          </section>
+
+          <section class="card section-card">
+            <div class="section-heading">
+              <div><p class="section-kicker">JOURNAL</p><h2>Journal 日记</h2></div>
+              <span>♫</span>
+            </div>
+            <div class="quick-card-body">
+              <textarea id="journalText" rows="4" placeholder="记录美好的瞬间、想法、灵感…"></textarea>
+            </div>
+          </section>
+        </div>
+
+        <section class="card section-card">
+          <div class="section-heading">
+            <div><p class="section-kicker">GOALS</p><h2>目标系统</h2></div>
+          </div>
+          <div class="goal-grid" id="goalGrid"></div>
+        </section>
+
+        <section class="card section-card">
+          <div class="section-heading">
+            <div><p class="section-kicker">BADGES</p><h2>今日成就</h2></div>
+          </div>
+          <div class="badge-row" id="badgeRow"></div>
+        </section>
+      </section>
+
+      <section class="page" id="reviewPage">
+        <div class="page-title">
+          <button class="back-button" data-page="today" type="button">←</button>
+          <div>
+            <p class="section-kicker" id="reviewDateLabel"></p>
+            <h2>今日复盘</h2>
+          </div>
+        </div>
+        <form class="card review-form" id="reviewForm">
+          <div class="field full">
+            <label for="reviewDone">今天完成了什么</label>
+            <textarea id="reviewDone" rows="3" placeholder="记录今天的小小成果…"></textarea>
+          </div>
+          <div class="field full">
+            <label for="reviewUndone">今天没完成什么</label>
+            <textarea id="reviewUndone" rows="3" placeholder="没关系，诚实记录就好。"></textarea>
+          </div>
+          <div class="field full">
+            <label for="reviewProblems">今天的问题</label>
+            <textarea id="reviewProblems" rows="3" placeholder="是什么让事情变得困难？"></textarea>
+          </div>
+          <div class="field full">
+            <label for="reviewImprove">明天要改进什么</label>
+            <textarea id="reviewImprove" rows="3" placeholder="给明天一个清晰的小提示…"></textarea>
+          </div>
+          <fieldset class="mood-field">
+            <legend>今日心情</legend>
+            <div class="moods" id="moodOptions">
+              <label><input type="radio" name="mood" value="很棒"><span>🥰<small>很棒</small></span></label>
+              <label><input type="radio" name="mood" value="开心"><span>😊<small>开心</small></span></label>
+              <label><input type="radio" name="mood" value="平静"><span>😌<small>平静</small></span></label>
+              <label><input type="radio" name="mood" value="疲惫"><span>😮‍💨<small>疲惫</small></span></label>
+              <label><input type="radio" name="mood" value="低落"><span>🥺<small>低落</small></span></label>
+            </div>
+          </fieldset>
+          <div class="field full">
+            <label for="reviewNote">今日备注</label>
+            <textarea id="reviewNote" rows="4" placeholder="其他想留下来的话…"></textarea>
+          </div>
+          <button class="primary-button full" type="submit">保存今日复盘</button>
+          <p class="save-hint" id="reviewSaveHint">内容会自动保存在本地并同步到云端</p>
+        </form>
+      </section>
+
+      <section class="page" id="historyPage">
+        <div class="page-title simple-title">
+          <div>
+            <p class="section-kicker">MEMORIES</p>
+            <h2>历史记录</h2>
+          </div>
+        </div>
+        <div class="date-row card soft-card">
+          <label for="historyDate">选择日期</label>
+          <input id="historyDate" type="date">
+        </div>
+        <div id="historyContent"></div>
+      </section>
+
+      <section class="page" id="financePage">
+        <div class="page-title simple-title">
+          <div>
+            <p class="section-kicker">FINANCE</p>
+            <h2>财务汇总</h2>
+          </div>
+        </div>
+
+        <div class="fin-month-nav card soft-card">
+          <button class="fin-nav-btn" id="finPrev" type="button">‹</button>
+          <span id="finMonthLabel"></span>
+          <button class="fin-nav-btn" id="finNext" type="button">›</button>
+        </div>
+
+        <div class="fin-stats">
+          <article class="summary-card rose">
+            <span>本月支出</span>
+            <strong id="finMonthTotal">¥0.00</strong>
+          </article>
+          <article class="summary-card cream">
+            <span>今日支出</span>
+            <strong id="finTodayTotal">¥0.00</strong>
+          </article>
+          <article class="summary-card lilac">
+            <span>记录笔数</span>
+            <strong id="finMonthCount">0 笔</strong>
+          </article>
+          <article class="summary-card sage-summary">
+            <span>日均支出</span>
+            <strong id="finDailyAvg">¥0.00</strong>
+          </article>
+        </div>
+
+        <section class="card section-card">
+          <div class="section-heading">
+            <div><p class="section-kicker">BY CATEGORY</p><h3>分类汇总</h3></div>
+          </div>
+          <div style="padding:6px 16px 16px" id="finMethodBreakdown"></div>
+        </section>
+
+        <section class="card section-card">
+          <div class="section-heading">
+            <div><p class="section-kicker">RECORDS</p><h3>本月明细</h3></div>
+            <span class="count-badge" id="finRecordBadge">0 笔</span>
+          </div>
+          <div class="empty-state" id="finEmpty">本月暂无支出记录。</div>
+          <div style="padding:0 16px 4px" id="finRecordList"></div>
+        </section>
+      </section>
+
+      <section class="page" id="makeupPage">
+        <div class="page-title simple-title">
+          <div>
+            <p class="section-kicker">MAKEUP</p>
+            <h2>妆容相册</h2>
+          </div>
+        </div>
+        <p class="makeup-hint">每天存一张，看自己一天天的变化 ✿</p>
+
+        <section class="card section-card">
+          <div class="section-heading">
+            <div><p class="section-kicker">TODAY</p><h3 id="makeupDateLabel">今天</h3></div>
+          </div>
+          <div class="makeup-slots">
+            <button class="makeup-slot" id="slotBefore" type="button"><span class="ms-emoji">📷</span><span class="ms-label">素颜 before</span></button>
+            <button class="makeup-slot" id="slotAfter" type="button"><span class="ms-emoji">💄</span><span class="ms-label">妆后 after</span></button>
+          </div>
+          <input type="file" id="makeupFile" accept="image/*" hidden>
+        </section>
+
+        <section class="card section-card" id="makeupCompareCard" style="display:none">
+          <div class="section-heading">
+            <div><p class="section-kicker">PROGRESS</p><h3>最早 vs 最近</h3></div>
+          </div>
+          <div class="makeup-pad" id="makeupCompare"></div>
+        </section>
+
+        <section class="card section-card">
+          <div class="section-heading">
+            <div><p class="section-kicker">ALBUM</p><h3>全部足迹</h3></div>
+          </div>
+          <div class="makeup-pad" id="makeupTimeline"></div>
+        </section>
+      </section>
+
+      <section class="page" id="guidePage">
+        <div class="page-title simple-title">
+          <div>
+            <p class="section-kicker">NEGENTROPY GUIDE</p>
+            <h2>目标系统</h2>
+          </div>
+        </div>
+        <blockquote class="guide-quote">不是逼自己完美，<br>而是每天都给人生开机。</blockquote>
+
+        <section class="card history-card">
+          <h3>5 个长期目标</h3>
+          <div class="direction-grid">
+            <article><b>01 英语</b><p>每天口练、输入和复盘，建立长期表达能力。</p></article>
+            <article><b>02 日语</b><p>用轻量节奏保持语感，先不断线。</p></article>
+            <article><b>03 妆容形象</b><p>记录妆容、穿搭和皮肤状态，看见变化。</p></article>
+            <article><b>04 AI / 网站项目</b><p>每天推进一个可见成果，长期沉淀作品。</p></article>
+            <article><b>05 赚钱与内容</b><p>把记录、表达、产品化和收入连接起来。</p></article>
+          </div>
+        </section>
+
+        <section class="card history-card">
+          <h3>每日计划时间表</h3>
+          <div class="schedule-list">
+            <div><span>☀️ 早上</span><p>喝水、整理床铺、护肤、早餐、晨写与核心意图。</p></div>
+            <div><span>🌤 上午 / 中午</span><p>推进一个现实结果，优先做能看见成果的事。</p></div>
+            <div><span>🌿 下午</span><p>走路、审美输入、深度阅读与一个小产出。</p></div>
+            <div><span>🌙 晚上</span><p>洗澡护肤、整理房间、形体训练、复盘并准备明天。</p></div>
+          </div>
+        </section>
+
+        <section class="card history-card">
+          <h3>避免 6 种熵增行为</h3>
+          <ul class="avoid-list">
+            <li>一醒来就刷手机——先晨写，再看手机</li>
+            <li>同时开太多目标——只专注今日一件核心事</li>
+            <li>买东西代替改变——先问：需要吗？有结果吗？</li>
+            <li>只收藏不整理——每天至少产出一个结果</li>
+            <li>情绪上头做决定——先睡觉，明天再说</li>
+            <li>晚上继续看刺激内容——换成复盘或轻阅读</li>
+          </ul>
+        </section>
+      </section>
+    </main>
+
+    <nav class="bottom-nav" aria-label="主导航">
+      <button class="nav-item active" data-page="today" type="button"><span>⌂</span>今日</button>
+      <button class="nav-item" data-page="review" type="button"><span>✎</span>复盘</button>
+      <button class="nav-item" data-page="history" type="button"><span>◷</span>历史</button>
+      <button class="nav-item" data-page="finance" type="button"><span>💰</span>财务</button>
+      <button class="nav-item" data-page="makeup" type="button"><span>📸</span>妆容</button>
+      <button class="nav-item" data-page="guide" type="button"><span>☆</span>目标</button>
+    </nav>
+  </div>
+
+  <div class="toast" id="toast" role="status"></div>
+
+  <div class="makeup-lightbox" id="makeupLightbox">
+    <span class="ml-close" id="mlClose">×</span>
+    <img id="mlImg" alt="妆容照片">
+    <p id="mlDate"></p>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="app.js?v=20260630-boot-plan1"></script>
+</body>
+</html>
